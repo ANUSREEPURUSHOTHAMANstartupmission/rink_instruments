@@ -1,0 +1,262 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from "../components/Navbarp.svelte";
+---
+
+<Layout>
+    <Navbar client:load></Navbar>
+
+    <!-- Add a loading spinner -->
+    <!-- <div id="loading" class="flex justify-center items-center h-screen">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="50" height="50" fill="#000">
+            <circle cx="50" cy="50" r="35" stroke-width="10" stroke="#000" fill="none" stroke-dasharray="150" stroke-dashoffset="0">
+                <animateTransform attributeName="transform" type="rotate" values="0 50 50;360 50 50" dur="1s" repeatCount="indefinite"></animateTransform>
+                <animate attributeName="stroke-dashoffset" values="0;150" dur="1s" repeatCount="indefinite"></animate>
+            </circle>
+        </svg>
+    </div> -->
+    <!-- loading -->
+    <!-- loading-spinner -->
+    
+    <div id="loading" style="display:none">
+        <svg xmlns="http://www.w3.org/2000/svg" style="margin: auto; background: none; display: block;" width="100px" height="100px" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
+          <circle cx="50" cy="50" r="32" stroke-width="8" stroke="#3498db" stroke-dasharray="50.26548245743669 50.26548245743669" fill="none" stroke-linecap="round">
+            <animateTransform attributeName="transform" type="rotate" repeatCount="indefinite" dur="1s" keyTimes="0;1" values="0 50 50;360 50 50"></animateTransform>
+          </circle>
+        </svg>
+      </div>
+
+      
+
+    <!-- Instruments and Filters Section -->
+   <!-- Instruments and Filters Section -->
+<div class="bg-[#f3f8ff]  md:py-28 sm:px-20 px-10" id="content" style="display:none;">
+   <div class="container">
+       <!-- Search and Filter Section, wrapped in a div with an ID -->
+       <div id="search-filter-container" class="flex md:flex-row flex-col md:justify-between my-16">
+           <div class="flex md:flex-row flex-col md:w-2/3 w-full gap-2">
+               <div class="md:w-2/5 w-full">
+                   <input type="text" id="search-input" class="p-2 w-full shadow-md" placeholder="Search..." oninput="applyFilters()">
+               </div>
+               <div class="md:w-2/5 w-full">
+                   <select id="district-filter" onchange="applyFilters()" class="form-select border-none p-2 bg-gray-200 shadow-md">
+                       <option value="">Select District</option>
+                   </select>
+               </div>
+               <div class="md:w-1/5 w-full items-end flex">
+                   <button class="reset-button text-blue-500" onclick="resetFilters()">Reset Filter</button>
+               </div>
+           </div>
+           <div id="result-count" class="result-count text-sm"></div>
+       </div>
+
+       <!-- Cards Container -->
+       <div id="cards-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5"></div>
+
+       <!-- Single View Container -->
+       <div id="details-container" class="details   cursor-pointer" style="display: none;">
+           <button class="back-button underline text-blue-400" onclick="showCards()">Back</button>
+           <div class="instrument-details mt-10 bg-white shadow-lg rounded-lg md:max-w-4xl w-full items-center justify-center mx-auto p-4">
+               <h2 class="text-xl font-bold mb-4" id="instrument-name"></h2>
+               <div class="flex md:flex-row flex-col gap-4 ">
+                   <div>
+                       <img src="" alt="" id="instrument-image" class="w-full mb-4 rounded object-contain">
+                   </div>
+                   <div class="px-3">
+                       <p class="flex flex-col"><strong >Institution Name</strong> <span id="institution-name" class="text-black"></span></p>
+                       <div class="w-full flex md:flex-row flex-col "><strong class="md:w-1/3 text-gray-500">Address</strong>  <span id="address" class="md:w-2/3"></span></div>
+                       <div class="w-full flex md:flex-row flex-col "><strong class="md:w-1/3 text-gray-500">POC</strong>  <span id="contact-person" class="md:w-2/3"></span></div>
+                       <div class="w-full flex md:flex-row flex-col "><strong class="md:w-1/3 text-gray-500">Con. Number</strong>  <span id="contact-number" class="md:w-2/3"></span></div>
+                       <div class="w-full flex md:flex-row flex-col "><strong class="md:w-1/3 text-gray-500">Email</strong>  <a id="email-link" href="" class="md:w-2/3"></a></div>
+                       <div class="w-full flex md:flex-row flex-col "><strong class="md:w-1/3 text-gray-500">Website</strong>  <a id="website-link" href="" target="_blank" class="md:w-2/3 text-blue-400 hover:text-blue-500 underline">Link</a></div>
+                   </div>
+               </div>
+           </div>
+       </div>
+   </div>
+</div>
+
+</Layout>
+
+<script is:inline>
+    let allInstruments = [];
+
+    // Fetch instruments data
+    async function fetchInstruments() {
+        try {
+            // Show loading spinner
+            document.getElementById('loading').style.display = 'flex';
+            document.getElementById('content').style.display = 'none';
+
+            const response = await fetch('https://script.google.com/macros/s/AKfycbyibxq7G74p902s7wES255pwUJTDGAzcCsxYwzORMnrhZGictCo0E3imyIZ180_5zLkHg/exec');
+            const data = await response.json();
+            allInstruments = data;
+
+            // Display the list of instruments
+            displayInstruments(data);
+            populateDistrictFilter(data);
+            updateResultCount(data.length, data.length);
+
+            // Hide loading spinner and show content
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('content').style.display = 'block';
+        } catch (error) {
+            console.error("Error fetching instruments:", error);
+        }
+    }
+
+// Function to extract the image ID from Google Drive URL
+function extractImageId(googleDriveUrl) {
+    if (typeof googleDriveUrl === 'string') {
+        const match = googleDriveUrl.match(/\/d\/(.+?)\//);
+        return match ? match[1] : null;
+    }
+    return null;
+}
+
+// Display instruments as cards with lazy loading and fallback for image errors
+function displayInstruments(data) {
+    const container = document.getElementById('cards-container');
+    container.innerHTML = ''; // Clear previous content
+
+    data.forEach(item => {
+        // Extract image ID from the Google Drive URL
+        const imageId = extractImageId(item.image);
+        // If image ID is extracted, construct the displayable Google Drive image URL
+        const driveImageUrl = imageId ? `https://lh3.googleusercontent.com/d/${imageId}=s1220` : 'default-placeholder-image-url.jpg';
+
+        const card = document.createElement('div');
+        card.className = 'flex flex-col bg-white shadow-md rounded-lg overflow-hidden cursor-pointer';
+        card.innerHTML = `
+            <div class="flex-shrink-0">
+                <div class="relative">
+                    <a href="javascript:void(0)">
+                        <img loading="lazy" src="${driveImageUrl}" alt='No Image Available' class="w-full h-48 object-cover" 
+                             onerror="this.onerror=null;this.src='default-placeholder-image-url.jpg';">
+                    </a>
+                </div>
+            </div>
+            <div class="flex flex-col p-4 flex-grow relative">
+                <a href="javascript:void(0)" class="text-sm font-semibold text-gray-900 pt-2">${item.instrument}</a><br>
+                <a href="javascript:void(0)" class="text-sm text-blue-600  bottom-2 absolute">
+                    <i class="fas fa-map-marker-alt"></i> ${item.district}
+                </a>
+            </div>
+        `;
+        card.addEventListener('click', () => showDetails(item)); // Show single view when clicked
+        container.appendChild(card);
+    });
+}
+
+// Show detailed view of a single instrument
+function showDetails(item) {
+    document.getElementById('cards-container').style.display = 'none'; // Hide card view
+    document.getElementById('search-filter-container').style.display = 'none'; // Hide search, filters, and result count
+    const detailsContainer = document.getElementById('details-container');
+
+    // Extract image ID from the Google Drive URL
+    const imageId = extractImageId(item.image);
+    // If image ID is extracted, construct the displayable Google Drive image URL
+    const driveImageUrl = imageId ? `https://lh3.googleusercontent.com/d/${imageId}=s1220` : 'default-placeholder-image-url.jpg';
+
+    // Populate instrument details
+    document.getElementById('instrument-name').textContent = item.instrument;
+    document.getElementById('instrument-image').src = driveImageUrl;
+    document.getElementById('instrument-image').onerror = function() {
+        this.onerror = null;
+        this.src = 'default-placeholder-image-url.jpg';
+    };
+    document.getElementById('institution-name').textContent = item.institutionName;
+    document.getElementById('address').textContent = item.address;
+    document.getElementById('contact-person').textContent = item.contactPerson;
+    document.getElementById('contact-number').textContent = item.contactNumber;
+    document.getElementById('email-link').textContent = item.email;
+    document.getElementById('email-link').href = `mailto:${item.email}`;
+    document.getElementById('website-link').href = item.website;
+
+    detailsContainer.style.display = 'block'; // Show details
+}
+
+// Go back to the cards view
+function showCards() {
+    document.getElementById('cards-container').style.display = 'grid'; // Show card view
+    document.getElementById('details-container').style.display = 'none'; // Hide details view
+    document.getElementById('search-filter-container').style.display = 'flex'; // Show search, filters, and result count
+}
+
+
+    // Filter by district and search input
+    function applyFilters() {
+    const query = document.getElementById('search-input').value.toLowerCase();
+    const selectedDistrict = document.getElementById('district-filter').value;
+
+    // Filter based on query and selected district
+    const filteredData = allInstruments.filter(item => {
+        return (
+            // Check if the query matches any of the relevant fields
+            (query === '' || 
+                item.nameOfFacility.toLowerCase().includes(query) || 
+                item.instrument.toLowerCase().includes(query) ||
+                item.institutionName.toLowerCase().includes(query) || 
+                item.address.toLowerCase().includes(query) || 
+                item.contactPerson.toLowerCase().includes(query)
+            ) &&
+            // Check if the selected district matches
+            (selectedDistrict === '' || item.district.includes(selectedDistrict))
+        );
+    });
+
+    // Display the filtered instruments
+    displayInstruments(filteredData);
+    updateResultCount(filteredData.length, allInstruments.length);
+}
+
+    // Update result count after filtering
+    function updateResultCount(matchingCount, totalCount) {
+        const resultCountDiv = document.getElementById('result-count');
+        resultCountDiv.textContent = `Showing ${matchingCount} of ${totalCount} results`;
+    }
+
+    // Populate district filter dropdown with unique districts
+    function populateDistrictFilter(data) {
+        const districtFilter = document.getElementById('district-filter');
+        const districts = [...new Set(data.map(item => item.district))];
+
+        districts.forEach(district => {
+            const option = document.createElement('option');
+            option.value = district;
+            option.textContent = district;
+            districtFilter.appendChild(option);
+        });
+    }
+
+    // Reset search and district filter
+    function resetFilters() {
+        document.getElementById('search-input').value = '';
+        document.getElementById('district-filter').value = '';
+        displayInstruments(allInstruments);
+        updateResultCount(allInstruments.length, allInstruments.length);
+    }
+
+    // Wait for DOM content to load before running scripts
+    document.addEventListener("DOMContentLoaded", function() {
+        fetchInstruments();
+    });
+</script>
+
+<style is:global>
+    /* Loader styles */
+    #loading {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(255, 255, 255, 0.8);
+      z-index: 9999;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  </style>

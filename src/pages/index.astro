@@ -1,0 +1,182 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from "../components/Navbar.svelte";
+
+---
+
+
+<Layout>
+    <Navbar client:load></Navbar>
+
+    <a href="javascript:" id="return-to-top"><i class="fas fa-sort-up"></i></a>
+ 
+      
+    <main class="py-24 min-h-screen  flex flex-col items-center justify-center" >
+        <div class="absolute -z-10 w-full h-full top-0 left-0 bg-[#09141bb6] bg-opacity-95"></div>
+       <div class="absolute -z-20 bg-cover bg-center bg-no-repeat w-full h-screen " style="background-image:url('/img/bg1.jpg')"></div>  
+   
+      
+       <div class="container mx-auto text-white p-4 py-8">
+          <div class=" py-10 ">
+             <h1 class=" md:text-6xl text-center text-5xl   font-bold text-white">Book & Experience </h1>
+             <h1 class=" md:text-5xl text-center text-3xl py-2  font- font-mono   text-white">Research Instrumentation Facility</h1>
+             <h1 class=" md:text-4xl text-center text-3xl   text-white">in Kerala</h1>
+            <div class="mx-auto item-center justify-center flex pt-4">
+                <a href="#about" type="button" class="btn btn-primary">Explore</a>
+            </div>
+          </div>
+       </div>
+     
+ </main>
+    <div class="counterFour  pt-24" id="about">
+        <div class="container text-center">
+            <div class="grid sm:grid-cols-3 grid-cols-1 pb-16">
+
+                <div class=" items-center justify-center flex flex-col">
+                    <img src="/img/science-atom-icon.svg" class="w-16 flex items-center justify-center">
+                    <div class="count-description">
+                        <span class="timer">785</span>
+                    </div>
+                    <h4 class="font-semibold">Instruments</h4>
+
+                </div>
+
+
+                <div class=" items-center justify-center flex flex-col">
+                    <img src="/img/2.png" class="w-16 flex items-center justify-center">
+                    <div class="count-description">
+                        <span class="timer">785</span>
+                    </div>
+                    <h4 class="font-semibold">Institutions</h4>
+
+                </div>
+
+
+                <div class=" items-center justify-center flex flex-col">
+                    <img src="/img/society-icon.svg" class="w-16 flex items-center justify-center">
+                    <div class="count-description">
+                        <span class="timer">785</span>
+                    </div>
+                    <h4 class="font-semibold">Facilities</h4>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+    <div class="blog-main-wrapper">
+        <div class="container px-10">
+            <div class="row">
+                <div class="col-lg-6 col-md-12 col-sm-12 col-12">
+                    <div class="blog-cont">
+                        <h3><a href="javascript:;">About</a></h3>
+                        <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Voluptas dolor repudiandae quae recusandae incidunt minima nemo, tenetur, eos consequuntur quo et eligendi facilis, quia porro hic animi? Maxime, ratione accusantium?</p>
+                        <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Culpa possimus dignissimos, optio quasi consequuntur veniam. Nesciunt facilis fuga, obcaecati fugiat sit deleniti. Placeat, omnis! Quae quibusdam fuga cupiditate eveniet pariatur!</p>
+                        <a type="button" class="btn btn-primary w-fit" href="/instruments"><span class="text-blue-900">View&nbsp;Instruments</span></a>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-12 col-sm-12 col-12">
+                    <div class=" rounded-md">
+                        <div class="tilt-container" data-tilt data-tilt-max="5" data-tilt-speed="400" data-tilt-perspective="1500">
+                            <img src="/img/1.jpg" alt="Tilted Image" class="tilt-img rounded-lg shadow-2xl">
+                        </div>
+                    
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div id="footer_3_section">
+        <!-- section-3 start-->
+        <div class="section_3">
+            <div class="container">
+                <div class="section3_wrapper_first">
+                    <div class="row">
+                        <div class="col-lg-3 col-md-8 col-xs-12 col-sm-12">
+                            <div class="wrapper_first_image">
+                                <img src="img/rink.svg" class="img-responsive" alt="footer3_logo_img" />
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-xs-12 col-sm-12">
+                            <div class="wrapper_first_icon">
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-xs-12 col-sm-12">
+                            <div class="wrapper_first_icon">
+                                <i class="fa fa-envelope"></i><span>Contact our Office</span>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-3 col-md-4 col-xs-12 col-sm-12">
+                            <div class="wrapper_first_icon visible">
+                                <i class="fa fa-rss" aria-hidden="true"></i><span>Instruments<a href="#">New</a></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+      
+    </div>
+
+</Layout>
+
+    <script is:inline>
+         (function () {
+            $('.counterFour').bind('inview', function (event, visible, visiblePartX, visiblePartY) {
+                if (visible) {
+                    $(this).find('.timer').each(function () {
+                        var $this = $(this);
+                        $({ Counter: 0 }).animate({ Counter: $this.text() }, {
+                            duration: 2000,
+                            easing: 'swing',
+                            step: function () {
+                                $this.text(Math.ceil(this.Counter));
+                            }
+                        });
+                    });
+                    $(this).unbind('inview');
+                }
+            });
+
+        }());
+    </script>
+
+
+<style is:global>
+   
+
+    .tilt-img {
+        width: 100%;
+        height: 100%;
+        transition: transform 0.2s ease-out;
+    }
+</style>
+
+<script is:inline>
+    // Initialize VanillaTilt on elements with 'data-tilt'
+    VanillaTilt.init(document.querySelectorAll("[data-tilt]"), {
+        max: 5,  // Very small tilt angle (5 degrees)
+        speed: 400,  // Transition speed
+        glare: false,  // No glare effect
+        perspective: 1500  // Larger perspective for subtle depth
+    });
+</script>
+  <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.7.0/vanilla-tilt.min.js"></script>
